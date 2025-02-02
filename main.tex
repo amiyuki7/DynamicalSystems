@@ -1,0 +1,280 @@
+\documentclass[a4paper]{article}
+
+\usepackage{silence}
+\WarningsOff[everypage]
+
+\usepackage[pages=all, color=black, position={current page.south}, placement=bottom, scale=1, opacity=1, vshift=5mm]{background}
+\SetBgContents{
+	\tt This work is shared under a \href{https://creativecommons.org/licenses/by-sa/4.0/}{CC BY-SA 4.0 license} unless otherwise noted
+}      % copyright
+
+\usepackage[margin=1in]{geometry} % full-width
+
+\usepackage[T1]{fontenc}
+\usepackage{parskip}
+\usepackage[english]{isodate}
+
+% AMS Packages
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+% Unicode
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\hypersetup{
+	unicode,
+	colorlinks,
+	breaklinks,
+	urlcolor=cyan, 
+	linkcolor=blue, 
+	pdfauthor={Author One, Author Two, Author Three},
+	pdftitle={A simple article template},
+	pdfsubject={A simple article template},
+	pdfkeywords={article, template, simple},
+	pdfproducer={LaTeX},
+	pdfcreator={pdflatex}
+}
+
+% Natbib
+\usepackage[sort&compress,numbers,square]{natbib}
+\bibliographystyle{mplainnat}
+
+% Theorem, Lemma, etc
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}{Claim}[theorem]
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{criterion}[theorem]{Criterion}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{principle}[theorem]{Principle}
+
+\usepackage{graphicx, color}
+\graphicspath{{fig/}}
+
+%\usepackage[linesnumbered,ruled,vlined,commentsnumbered]{algorithm2e} % use algorithm2e for typesetting algorithms
+\usepackage{algorithm, algpseudocode} % use algorithm and algorithmicx for typesetting algorithms
+\usepackage{mathrsfs} % for \mathscr command
+
+\usepackage{lipsum}
+
+% Author info
+\title{Linear Algebra Applications - Discrete Linear Dynamical Systems}
+\author{Alexander Xie$^1$\thanks{With support from Pau Battle}\\\\
+	\href{mailto:alex.xie1@student.unsw.edu.au}{alex.xie1@student.unsw.edu.au}}
+
+\date{\printdayoff\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	Dynamical systems are processes that evolve in time. Through forms of mathematical modelling, the study of dynamical
+	systems is beneficial to comprehend a variety of natural phenomena. In particular, discrete linear dynamical systems
+	are useful to model a scenario as a series of state snapshots.
+	In this paper, we focus on discrete linear dynamical systems in the form of first-order homogenous matrix recurrence
+	relation. We then illustrate the application of these systems through a real-world case study by modelling the
+	spread of a virus.
+
+	% \noindent\textbf{Keywords:} article, template, simple
+\end{abstract}
+
+\tableofcontents
+
+\pagebreak
+
+\section{Discrete Linear Dynamical Systems}
+
+We will begin by exploring the theory central to our case study in Section 2.
+
+\subsection{A matrix recurrence relation}
+
+For a square matrix $A$ and an initial state vector $x_0$, define the first-order homogenous recurrence:
+\[ x_t=Ax_{t-1},\quad \text{for } t\geq 1. \]
+Iterating yields a sequence of vectors $x_0, Ax_0, A^2x_0,\ldots, A^kx_0,\ldots$ which represent the evolution of the
+system starting from $x_0$. This sequence is called the \textbf{\textit{orbit}} of the
+system starting from $x_0$.
+
+An important question to raise about this dynamical system is: what is its long-term behaviour? For example, if our
+system models a particular population of rabbits, it would be worthwhile to observe the population a few months ahead.
+What happens as $t\to\infty$? Does the system have limiting behaviours?
+
+To compute the elements in our orbit, we require an efficient method to compute $A^n$ for large $n$, as repeated
+matrix multiplication is cumbersome.
+
+\subsection{Diagonalisation}
+
+Recall that it is easy to multiply diagonal matrices (square matrices in which the entries outside the main diagonal
+are all zero):
+
+\[
+	\begin{pmatrix}
+		a_{11} &        &        &        \\
+		       & a_{22} &        &        \\
+		       &        & \ddots &        \\
+		       &        &        & a_{nn}
+	\end{pmatrix}
+	\begin{pmatrix}
+		b_{11} &        &        &        \\
+		       & b_{22} &        &        \\
+		       &        & \ddots &        \\
+		       &        &        & b_{nn}
+	\end{pmatrix}
+	=
+	\begin{pmatrix}
+		a_{11}b_{11} &              &        &              \\
+		             & a_{22}b_{22} &        &              \\
+		             &              & \ddots &              \\
+		             &              &        & a_{nn}b_{nn}
+	\end{pmatrix}
+\]
+
+This simplicity of multiplying diagonal matrices prompts us to investigate if $A$ is similar to a diagonal matrix; do
+there exist an invertible matrix $P$ and a diagonal matrix $D$ such that $A$ can be written as $PDP^{-1}$? If so, then
+we say that $A$ is \textbf{\textit{diagonalisable}}. This condition is equivalent to $AP=PD$. Observe that it is easier
+to computer powers of a diagonalisable matrix:
+\begin{align*}
+	A^n & = (PDP^{-1})(PDP^{-1})\cdots(PDP^{-1})                                                             \\
+	    & = PD\underbrace{(P^{-1}P)}_{I}D\underbrace{(P^{-1}P)}_{I}D\cdots \underbrace{(P^{-1}P)}_{I}DP^{-1} \\
+	    & = PD^n P^{-1}
+\end{align*}
+
+\begin{theorem}
+	\label{thrm:1}
+	% The matrix $A\in\mathbb{R}^{n\times n}$ is diagonalisable if and only if $A$ has $n$ linearly independent eigenvectors.
+	A square matrix is diagonalisable if and only if it has $n$ linearly independent eigenvectors.
+\end{theorem}
+
+\begin{proof}
+	$(\implies)$ Suppose that $A\in\mathbb{R}^{n\times n}$ is diagonalisable. Then there exists an invertible matrix
+	$P\in\mathbb{R}^{n\times n}$ and a diagonal matrix $D\in\mathbb{R}^{n\times n}$ such that $AP=PD$.
+
+	Let $P=\begin{pmatrix}v_1 & v_2 & \cdots & v_n \end{pmatrix}$ where $v_i$ are linearly independent columns, and let
+	$D=\operatorname{diag}(\lambda_1,\lambda_2,\ldots,\lambda_n)$.
+
+	Writing $AP=PD$ as columns, we have $\begin{pmatrix}Av_1 & Av_2 & \cdots & Av_n\end{pmatrix}=
+		\begin{pmatrix}\lambda_1v_1 & \lambda_2v_2 & \cdots & \lambda_nv_n\end{pmatrix}$.
+
+	Thus, $Av_i=\lambda_iv_i$ for each $i=1,\ldots n$. Hence, $v_i$ is an eigenvector associated to $\lambda_i$.
+
+	$(\impliedby)$ Conversely, suppose that $A\in\mathbb{R}^{n\times n}$ has $n$ linearly independent eigenvectors
+	$v_1,v_2,\ldots,v_n$ associated to the eigenvalues $\lambda_1,\lambda_2,\ldots,\lambda_n$ respectively. Then for each
+	$i=1,\ldots,n$ we have $Av_i=\lambda_iv_i$.
+
+	Let $P=\begin{pmatrix}v_1 & v_2 & \cdots & v_n\end{pmatrix}$ where $v_i$ are the columns. Note that $P$ is invertible
+	as the columns are linearly independent. Also, let $D=\operatorname{diag}(\lambda_1,\lambda_2,\cdots\lambda_n)$.
+
+	Now the equations $Av_i=\lambda_iv_i$ for each $i=1,\ldots,n$ can be compactly expressed as $AP=PD$, which gives
+	$A=PDP^{-1}$. Hence, $A$ is diagonalisable.
+\end{proof}
+
+\begin{corollary}
+	\label{cor:2}
+	An eigen-formula for diagonalisable matrices.
+\end{corollary}
+
+In \ref{thrm:1}, observe that $P$ and $D$ are constructed by the eigenvectors and eigenvalues of $A$. So if
+$A\in\mathbb{R}^{n\times n}$ has $n$ linearly independent eigenvectors $v_1,v_2,\ldots,v_n$ associated to the eigenvalues
+$\lambda_1,\lambda_2,\ldots,\lambda_n$, then
+
+\[
+	A=\begin{pmatrix}v_1 & v_2 & \cdots & v_n\end{pmatrix}
+	\begin{pmatrix}
+		\lambda_1 &           &        &           \\
+		          & \lambda_2 &        &           \\
+		          &           & \ddots &           \\
+		          &           &        & \lambda_n
+	\end{pmatrix}
+	\begin{pmatrix}v_1 & v_2 & \cdots & v_n\end{pmatrix}^{-1}
+\]
+
+\begin{example}
+	Diagonalise $A=\begin{pmatrix}2&0&0\\-2&1&1\\1&0&-1\end{pmatrix}$, if possible.
+
+	We will first find the eigenvalues of $A$ by solving $\det(\lambda I - A)=0$.
+	\begin{align*}
+		0 & =\det\begin{pmatrix}\lambda-2&0&0\\2&\lambda-1&-1\\-1&0&\lambda+1\end{pmatrix} \\
+		  & =(\lambda-2)\det\begin{pmatrix}\lambda-1&-1\\0&\lambda+1\end{pmatrix}          \\
+		  & =(\lambda-2)(\lambda-1)(\lambda+1)
+	\end{align*}
+	Thus the eigenvalues of $A$ are $\lambda_1=1,\lambda_2=2,\lambda_3=-1$.
+
+	To find the eigenvectors of $A$, we solve $(\lambda_i I - A)v_i=0$ for each $i=1,2,3$.
+
+	By row reducing each equation, it can be shown that we have $v_1=\begin{pmatrix}0\\1\\0\end{pmatrix}$,
+	$v_2=\begin{pmatrix}3\\-5\\1\end{pmatrix}$ and $v_3=\begin{pmatrix}0\\-1\\2\end{pmatrix}$.
+
+	The eigenvectors of $A$ are clearly linearly independent, thus by \ref{thrm:1}, $A$ is diagonalisable, and by \ref{cor:2},
+	we can write $A$ as $PDP^{-1}$ where $P=\begin{pmatrix}0&3&0\\1&-5&-1\\0&1&2\end{pmatrix}$ and $D=\begin{pmatrix}1&&\\&2&\\&&-1\end{pmatrix}$.
+\end{example}
+\newpage
+
+
+
+Unordered List (taken from Overleaf)
+\begin{itemize}
+	\item The individual entries are indicated with a black dot, a so-called bullet.
+	\item The text in the entries may be of any length.
+\end{itemize}
+
+Ordered List (taken from Overleaf)
+\begin{enumerate}
+	\item The labels consists of sequential numbers.
+	\item The numbers starts at 1 with every call to the enumerate environment.
+\end{enumerate}
+
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Odd} & \textbf{Even} \\
+		\hline\hline
+		One          & Two           \\
+		\hline
+		Three        & Four          \\
+		\hline
+	\end{tabular}
+	\caption{This is a table}
+	\label{tbl:1}
+\end{table}
+
+Table~\ref*{tbl:1} is an example of a table.
+
+\section{More Examples}
+\label{sec:examples}
+
+Now we include a figure.
+(See Figure~\ref{fig:example}.)
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.3\textwidth]{example}
+	\caption{An example of a figure}
+	\label{fig:example}
+\end{figure}
+
+\paragraph{Acknowledgements} \lipsum[6]
+
+%	\newpage
+\bibliography{refs}
+\nocite{*}
+
+\appendix
+
+\section{Omitted Proof in Section~\ref{sec:examples}}
+\label{app:1}
+
+\lipsum[7]
+
+\end{document}
