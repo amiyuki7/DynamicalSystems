@@ -61,6 +61,8 @@
 \newtheorem{problem}[theorem]{Problem}
 \newtheorem{principle}[theorem]{Principle}
 
+\usepackage{enumitem}
+
 \usepackage{graphicx, color}
 \graphicspath{{fig/}}
 
@@ -220,10 +222,24 @@ $\lambda_1,\lambda_2,\ldots,\lambda_n$, then
 \end{example}
 \newpage
 
-\subsection{Case Study}
+\subsection{Case Study - Problems}
 
-We will now
-
+\begin{enumerate}[label=\textbf{\arabic*})]
+	\item
+	      \begin{align*}
+		      x(k+1)=A(x(k)) & =\begin{pmatrix}1.03 & 0 & -c \\0.1&0.5&c\\0&0.5&0.1\end{pmatrix}\begin{pmatrix}S_k\\L_k\\I_k\end{pmatrix}                        \\
+		                     & =S_k\begin{pmatrix}1.03\\0.1\\0\end{pmatrix}+L_k\begin{pmatrix}0\\0.5\\0.5\end{pmatrix}+I_k\begin{pmatrix}-c\\c\\0.1\end{pmatrix} \\
+		                     & =\begin{pmatrix}1.03S_k-cI_k\\0.1S_k+0.5L_k+cI_k\\0.5L_k+0.1I_k\end{pmatrix}.
+	      \end{align*}
+	      Thus, we have $S_{k+1}=1.03S_k-cI_k$, $L_{k+1}=0.1S_k+0.5L_k+cI_k$ and $I_{k+1}=0.5L_k+0.1I_k$.
+	\item Taking $c=0.3$ and $x(0)=(3340000,2100,1500)^T$,
+	      \begin{enumerate}
+		      \item $x(52)=A^{52}(x(0))$\\
+		            Computing eigenvalues and eigenvectors is a routine exercise, so we will use numpy (see code extract 2a).
+		            It turns out that $A$ is diagonalisable, thus $A^{52} = PD^{52}P^{-1}$, where $P$ and $D$ are the
+		            matrices in \ref{cor:2}. Running the 2a Python code, the population after 52 weeks is 1702386.
+	      \end{enumerate}
+\end{enumerate}
 
 \section{Code Extracts}
 % \label{sec:examples}
